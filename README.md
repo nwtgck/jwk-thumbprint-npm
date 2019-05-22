@@ -1,7 +1,13 @@
 # jwk-thumbprint
-[![CircleCI](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm.svg?style=shield)](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm)
+![npm](https://img.shields.io/npm/v/jwk-thumbprint.svg) [![CircleCI](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm.svg?style=shield)](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm)
 
 JWK Thumbprint for JavaScript/TypeScript on both Web Browser and Node.js
+
+## Installation
+
+```bash
+npm i -S jwk-thumbprint
+```
 
 ## Usage
 
