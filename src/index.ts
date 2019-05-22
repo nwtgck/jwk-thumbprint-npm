@@ -1,4 +1,5 @@
 import * as hashJs from 'hash.js';
+import { Base64 } from "js-base64"
 
 export function canonicalizeJwk(jwk: JsonWebKey & {kty: "RSA"}): JsonWebKey;
 export function canonicalizeJwk(jwk: JsonWebKey & {kty: "EC"}): JsonWebKey;
@@ -34,7 +35,7 @@ type HashAlg = "SHA-256" | "SHA-512";
 
 export function jwkThumbprint(jwk: JsonWebKey & {kty: "RSA"}, hashAlg: HashAlg): Uint8Array;
 export function jwkThumbprint(jwk: JsonWebKey & {kty: "EC"}, hashAlg: HashAlg): Uint8Array;
-export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): undefined;
+export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined;
 
 /**
  * Calculate JWK Thumbprint
@@ -63,4 +64,31 @@ export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | u
       // Never call if the type is valid
       throw new Error(`Unexpected error: unknown algorithm: ${hashAlg}`);
   }
+}
+
+export function jwkThumbprintBase64url(jwk: JsonWebKey & {kty: "RSA"}, hashAlg: HashAlg): string;
+export function jwkThumbprintBase64url(jwk: JsonWebKey & {kty: "EC"}, hashAlg: HashAlg): string;
+export function jwkThumbprintBase64url(jwk: JsonWebKey, hashAlg: HashAlg): string | undefined;
+
+/**
+ * Calculate JWK Thumbprint as base64url
+ *
+ * https://tools.ietf.org/html/rfc7638#section-3.1
+ * @param jwk
+ * @param hashAlg
+ */
+export function jwkThumbprintBase64url(jwk: JsonWebKey, hashAlg: HashAlg): string | undefined {
+  // Calculate thumbprint
+  const thumbprint: Uint8Array | undefined = jwkThumbprint(jwk, hashAlg);
+  if (thumbprint === undefined) {
+    return undefined;
+  }
+
+  // (from: https://paulownia.hatenablog.com/entry/2019/02/07/201320)
+  const binStr = Array.from(thumbprint).map(b => String.fromCharCode(b)).join("");
+  // (from:  https://github.com/brianloveswords/base64url/blob/20117777e233fc86ac1286ccbc998bd6c923f149/src/base64url.ts#L25-L27)
+  return Base64.btoa(binStr)
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
 }
