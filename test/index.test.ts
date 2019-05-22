@@ -12,7 +12,8 @@ describe('jwk-thumbprint', () => {
       "kid": "2011-04-29"
     };
     {
-      const actual = jwkThumbprint(jwk, "SHA-256");
+      // NOTE: The return-type must not be undefined
+      const actual: Uint8Array = jwkThumbprint(jwk, "SHA-256");
       // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
       const expect = new Uint8Array( [
         55, 54, 203, 177, 120, 124, 184, 48, 156, 119, 238, 140, 55, 5, 197,
@@ -23,7 +24,8 @@ describe('jwk-thumbprint', () => {
     }
 
     {
-      const actual = jwkThumbprintBase64url(jwk, "SHA-256");
+      // NOTE: The return-type must not be undefined
+      const actual: string = jwkThumbprintBase64url(jwk, "SHA-256");
       // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
       const expect = "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
       assert.deepStrictEqual(actual, expect);
