@@ -33,9 +33,17 @@ export function canonicalizeJwk(jwk: JsonWebKey): JsonWebKey | undefined {
 // NOTE: these strings are compatible with https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
 type HashAlg = "SHA-256" | "SHA-512";
 
-export function jwkThumbprint(jwk: JsonWebKey & {kty: "RSA"}, hashAlg: HashAlg): Uint8Array;
-export function jwkThumbprint(jwk: JsonWebKey & {kty: "EC"}, hashAlg: HashAlg): Uint8Array;
-export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined;
+type Encodings = 'numbers' | 'hex' | 'uint8array' | 'base64url';
+
+type EcType = {
+  numbers: number[],
+  hex: string;
+  uint8array: Uint8Array,
+  base64url: string
+}
+
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg, ec: Ec): EcType[Ec];
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined;
 
 /**
  * Calculate JWK Thumbprint
@@ -43,8 +51,9 @@ export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | u
  * https://tools.ietf.org/html/rfc7638#section-3.1
  * @param jwk
  * @param hashAlg
+ * @param ec
  */
-export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined {
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined {
   // Canonicalize JWK
   const canonicalJwk = canonicalizeJwk(jwk);
   if (canonicalJwk === undefined) {
@@ -55,40 +64,35 @@ export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | u
   // (from: https://stackoverflow.com/a/16168003/2885946)
   const jsonStr = JSON.stringify(canonicalJwk, Object.keys(canonicalJwk));
 
-  switch (hashAlg) {
-    case "SHA-256":
-      return new Uint8Array(hashJs.sha256().update(jsonStr).digest());
-    case "SHA-512":
-      return new Uint8Array(hashJs.sha512().update(jsonStr).digest());
+  const digest: Sha256 | Sha512 = (() => {
+    switch (hashAlg) {
+      case "SHA-256":
+        return hashJs.sha256().update(jsonStr);
+      case "SHA-512":
+        return hashJs.sha512().update(jsonStr);
+      default:
+        // Never call if the type is valid
+        throw new Error(`Unexpected error: unknown algorithm: ${hashAlg}`);
+    }
+  })();
+
+  switch (ec) {
+    case 'numbers':
+      return digest.digest();
+    case 'hex':
+      return digest.digest('hex');
+    case "uint8array":
+      return new Uint8Array(digest.digest());
+    case 'base64url':
+      // (from: https://paulownia.hatenablog.com/entry/2019/02/07/201320)
+      const binStr = digest.digest().map(b => String.fromCharCode(b)).join("");
+      // (from:  https://github.com/brianloveswords/base64url/blob/20117777e233fc86ac1286ccbc998bd6c923f149/src/base64url.ts#L25-L27)
+      return Base64.btoa(binStr)
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
     default:
       // Never call if the type is valid
-      throw new Error(`Unexpected error: unknown algorithm: ${hashAlg}`);
+      throw new Error(`Unexpected encoding: ${ec}`);
   }
-}
-
-export function jwkThumbprintBase64url(jwk: JsonWebKey & {kty: "RSA"}, hashAlg: HashAlg): string;
-export function jwkThumbprintBase64url(jwk: JsonWebKey & {kty: "EC"}, hashAlg: HashAlg): string;
-export function jwkThumbprintBase64url(jwk: JsonWebKey, hashAlg: HashAlg): string | undefined;
-
-/**
- * Calculate JWK Thumbprint as base64url
- *
- * https://tools.ietf.org/html/rfc7638#section-3.1
- * @param jwk
- * @param hashAlg
- */
-export function jwkThumbprintBase64url(jwk: JsonWebKey, hashAlg: HashAlg): string | undefined {
-  // Calculate thumbprint
-  const thumbprint: Uint8Array | undefined = jwkThumbprint(jwk, hashAlg);
-  if (thumbprint === undefined) {
-    return undefined;
-  }
-
-  // (from: https://paulownia.hatenablog.com/entry/2019/02/07/201320)
-  const binStr = Array.from(thumbprint).map(b => String.fromCharCode(b)).join("");
-  // (from:  https://github.com/brianloveswords/base64url/blob/20117777e233fc86ac1286ccbc998bd6c923f149/src/base64url.ts#L25-L27)
-  return Base64.btoa(binStr)
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
 }
