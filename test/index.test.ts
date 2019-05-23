@@ -4,7 +4,7 @@ import * as assert from 'power-assert';
 describe('jwk-thumbprint', () => {
   it('should return the same thumbprint as an example in RFC7638', () => {
     // (from: https://tools.ietf.org/html/rfc7638#section-3.1)
-    const jwk: JsonWebKey & {kty: "RSA", kid: string} = {
+    const jwk: JsonWebKey & { kty: "RSA", kid: string } = {
       "kty": "RSA",
       "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
       "e": "AQAB",
@@ -32,7 +32,7 @@ describe('jwk-thumbprint', () => {
       // NOTE: The return-type must not be undefined
       const actual: Uint8Array = jwkThumbprint(jwk, "SHA-256");
       // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
-      const expect = new Uint8Array( expectNumbers);
+      const expect = new Uint8Array(expectNumbers);
       assert.deepStrictEqual(actual, expect);
     }
 
@@ -43,5 +43,32 @@ describe('jwk-thumbprint', () => {
       const expect = "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
       assert.deepStrictEqual(actual, expect);
     }
+  });
+
+  it('should return symmetric key thumbprint', () => {
+    const jwk: JsonWebKey & { kty: "oct" } = {
+      "alg": "A128GCM",
+      "ext": true,
+      "k": "9wcPr5BVF6hku5Fx3IrejQ",
+      "key_ops": ["encrypt", "decrypt"],
+      "kty": "oct"
+    };
+
+    // NOTE: The return-type must not be undefined
+    const actual: string = jwkThumbprintByEncoding(jwk, "SHA-256", 'base64url');
+    // NOTE: This expectation is calculated by a Ruby library, 'json/jwt'
+    //
+    // require 'json/jwt'
+    //
+    // jwk = JSON::JWK.new ({
+    //   "alg": "A128GCM",
+    //   "ext": true,
+    //   "k": "9wcPr5BVF6hku5Fx3IrejQ",
+    //   "key_ops": ["encrypt", "decrypt"],
+    //   "kty": "oct"
+    // })
+    // puts(jwk.thumbprint)
+    const expect = "O0ohsAio8Tj1lGR2SoX3Xa90quibp6j3vSe71e0LXRY";
+    assert.deepStrictEqual(actual, expect);
   });
 });
