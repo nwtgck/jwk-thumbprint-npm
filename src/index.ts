@@ -3,6 +3,7 @@ import { Base64 } from "js-base64"
 
 export function canonicalizeJwk(jwk: JsonWebKey & {kty: "RSA"}): JsonWebKey;
 export function canonicalizeJwk(jwk: JsonWebKey & {kty: "EC"}): JsonWebKey;
+export function canonicalizeJwk(jwk: JsonWebKey & {kty: "oct"}): JsonWebKey;
 export function canonicalizeJwk(jwk: JsonWebKey): JsonWebKey | undefined;
 
 /**
@@ -25,6 +26,11 @@ export function canonicalizeJwk(jwk: JsonWebKey): JsonWebKey | undefined {
         x: jwk.x,
         y: jwk.y
       };
+    case "oct":
+      return {
+        k: jwk.k,
+        kty: jwk.kty,
+      };
     default:
       return undefined;
   }
@@ -42,7 +48,7 @@ type EcType = {
   base64url: string
 }
 
-export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg, ec: Ec): EcType[Ec];
+export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC" | "oct"}, hashAlg: HashAlg, ec: Ec): EcType[Ec];
 export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined;
 
 /**
@@ -97,7 +103,7 @@ export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey, h
   }
 }
 
-export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg): Uint8Array;
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC" | "oct"}, hashAlg: HashAlg): Uint8Array;
 export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined;
 
 /**
