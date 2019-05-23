@@ -1,4 +1,4 @@
-import {jwkThumbprint, jwkThumbprintBase64url} from '../src';
+import {jwkThumbprint, jwkThumbprintByEncoding} from '../src';
 import * as assert from 'power-assert';
 
 describe('jwk-thumbprint', () => {
@@ -11,22 +11,35 @@ describe('jwk-thumbprint', () => {
       "alg": "RS256",
       "kid": "2011-04-29"
     };
+    // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
+    const expectNumbers: number[] = [
+      55, 54, 203, 177, 120, 124, 184, 48, 156, 119, 238, 140, 55, 5, 197,
+      225, 111, 251, 158, 133, 151, 21, 144, 31, 30, 76, 89, 177, 17, 130,
+      245, 123
+    ];
+    {
+      // NOTE: The return-type must not be undefined
+      const actual: number[] = jwkThumbprintByEncoding(jwk, "SHA-256", 'numbers');
+      assert.deepStrictEqual(actual, expectNumbers);
+    }
+    {
+      // NOTE: The return-type must not be undefined
+      const actual: string = jwkThumbprintByEncoding(jwk, "SHA-256", 'hex');
+      const expect = '3736cbb1787cb8309c77ee8c3705c5e16ffb9e859715901f1e4c59b11182f57b';
+      assert.deepStrictEqual(actual, expect);
+    }
     {
       // NOTE: The return-type must not be undefined
       const actual: Uint8Array = jwkThumbprint(jwk, "SHA-256");
       // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
-      const expect = new Uint8Array( [
-        55, 54, 203, 177, 120, 124, 184, 48, 156, 119, 238, 140, 55, 5, 197,
-        225, 111, 251, 158, 133, 151, 21, 144, 31, 30, 76, 89, 177, 17, 130,
-        245, 123
-      ]);
+      const expect = new Uint8Array( expectNumbers);
       assert.deepStrictEqual(actual, expect);
     }
 
     {
       // NOTE: The return-type must not be undefined
-      const actual: string = jwkThumbprintBase64url(jwk, "SHA-256");
-      // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
+      const actual: string = jwkThumbprintByEncoding(jwk, "SHA-256", 'base64url');
+      // NOTE: This expectation is also in https://tools.ietf.org/html/rfc7638#section-3.1
       const expect = "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
       assert.deepStrictEqual(actual, expect);
     }
