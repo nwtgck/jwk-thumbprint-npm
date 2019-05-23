@@ -42,18 +42,18 @@ type EcType = {
   base64url: string
 }
 
-export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg, ec: Ec): EcType[Ec];
-export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined;
+export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg, ec: Ec): EcType[Ec];
+export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined;
 
 /**
- * Calculate JWK Thumbprint
+ * Calculate JWK Thumbprint by encoding
  *
  * https://tools.ietf.org/html/rfc7638#section-3.1
  * @param jwk
  * @param hashAlg
  * @param ec
  */
-export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined {
+export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg, ec: Ec): EcType[Ec] | undefined {
   // Canonicalize JWK
   const canonicalJwk = canonicalizeJwk(jwk);
   if (canonicalJwk === undefined) {
@@ -95,4 +95,18 @@ export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: Ha
       // Never call if the type is valid
       throw new Error(`Unexpected encoding: ${ec}`);
   }
+}
+
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey & {kty: "RSA" | "EC"}, hashAlg: HashAlg): Uint8Array;
+export function jwkThumbprint<Ec extends Encodings>(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined;
+
+/**
+ * Calculate JWK Thumbprint
+ *
+ * https://tools.ietf.org/html/rfc7638#section-3.1
+ * @param jwk
+ * @param hashAlg
+ */
+export function jwkThumbprint(jwk: JsonWebKey, hashAlg: HashAlg): Uint8Array | undefined {
+  return jwkThumbprintByEncoding(jwk, hashAlg, 'uint8array');
 }

@@ -1,4 +1,4 @@
-import {jwkThumbprint} from '../src';
+import {jwkThumbprint, jwkThumbprintByEncoding} from '../src';
 import * as assert from 'power-assert';
 
 describe('jwk-thumbprint', () => {
@@ -19,18 +19,18 @@ describe('jwk-thumbprint', () => {
     ];
     {
       // NOTE: The return-type must not be undefined
-      const actual: number[] = jwkThumbprint(jwk, "SHA-256", 'numbers');
+      const actual: number[] = jwkThumbprintByEncoding(jwk, "SHA-256", 'numbers');
       assert.deepStrictEqual(actual, expectNumbers);
     }
     {
       // NOTE: The return-type must not be undefined
-      const actual: string = jwkThumbprint(jwk, "SHA-256", 'hex');
+      const actual: string = jwkThumbprintByEncoding(jwk, "SHA-256", 'hex');
       const expect = '3736cbb1787cb8309c77ee8c3705c5e16ffb9e859715901f1e4c59b11182f57b';
       assert.deepStrictEqual(actual, expect);
     }
     {
       // NOTE: The return-type must not be undefined
-      const actual: Uint8Array = jwkThumbprint(jwk, "SHA-256", 'uint8array');
+      const actual: Uint8Array = jwkThumbprint(jwk, "SHA-256");
       // NOTE: This expectation is also on https://tools.ietf.org/html/rfc7638#section-3.1
       const expect = new Uint8Array( expectNumbers);
       assert.deepStrictEqual(actual, expect);
@@ -38,7 +38,7 @@ describe('jwk-thumbprint', () => {
 
     {
       // NOTE: The return-type must not be undefined
-      const actual: string = jwkThumbprint(jwk, "SHA-256", 'base64url');
+      const actual: string = jwkThumbprintByEncoding(jwk, "SHA-256", 'base64url');
       // NOTE: This expectation is also in https://tools.ietf.org/html/rfc7638#section-3.1
       const expect = "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
       assert.deepStrictEqual(actual, expect);
