@@ -21,12 +21,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
-    "@types/mocha": "^5.2.6",
-    "@types/power-assert": "^1.5.0",
-    "espower-typescript": "^9.0.0",
-    "mocha": "^5.2.0",
+    "@types/mocha": "^7.0.1",
+    "@types/power-assert": "^1.5.3",
+    "espower-typescript": "^9.0.2",
+    "mocha": "^7.0.1",
     "power-assert": "^1.6.1",
-    "ts-node": "^7.0.1",
+    "ts-node": "^8.6.2",
     "typescript": "^3.4.5"
   },
   "dependencies": {
