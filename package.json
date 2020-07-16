@@ -31,6 +31,6 @@
   },
   "dependencies": {
     "hash.js": "^1.1.7",
-    "js-base64": "^2.5.1"
+    "js-base64": "^3.0.2"
   }
 }
