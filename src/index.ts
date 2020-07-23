@@ -68,7 +68,7 @@ export function jwkThumbprintByEncoding<Ec extends Encodings>(jwk: JsonWebKey, h
 
   // JSON string sorted by keys
   // (from: https://stackoverflow.com/a/16168003/2885946)
-  const jsonStr = JSON.stringify(canonicalJwk, Object.keys(canonicalJwk));
+  const jsonStr = JSON.stringify(canonicalJwk, Object.keys(canonicalJwk).sort());
 
   const digest: Sha256 | Sha512 = (() => {
     switch (hashAlg) {
