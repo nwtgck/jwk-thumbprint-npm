@@ -1,6 +1,6 @@
 {
   "name": "jwk-thumbprint",
-  "version": "0.1.4",
+  "version": "0.1.4-SNAPSHOT",
   "description": "JWK Thumbprint",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
