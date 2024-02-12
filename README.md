@@ -1,5 +1,5 @@
 # jwk-thumbprint
-[![npm](https://img.shields.io/npm/v/jwk-thumbprint.svg)](https://www.npmjs.com/package/jwk-thumbprint) [![CircleCI](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm.svg?style=shield)](https://circleci.com/gh/nwtgck/jwk-thumbprint-npm)
+[![npm](https://img.shields.io/npm/v/jwk-thumbprint.svg)](https://www.npmjs.com/package/jwk-thumbprint) [![Node CI](https://github.com/nwtgck/jwk-thumbprint-npm/actions/workflows/ci.yml/badge.svg)](https://github.com/nwtgck/jwk-thumbprint-npm/actions/workflows/ci.yml)
 
 JWK Thumbprint for JavaScript/TypeScript on both Web Browser and Node.js
 
