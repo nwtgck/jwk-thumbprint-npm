@@ -23,7 +23,7 @@
     "@types/js-base64": "^3.0.0",
     "@types/mocha": "^8.2.0",
     "@types/power-assert": "^1.5.3",
-    "mocha": "^7.0.1",
+    "mocha": "^10.3.0",
     "power-assert": "^1.6.1",
     "ts-node": "^10.9.2",
     "typescript": "^3.4.5"
